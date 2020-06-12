@@ -126,7 +126,7 @@ class NoteArray:
 
     def __str__(self):
 
-        return " ".join(self.notes)
+        return " ".join([str(x) for x in self.notes])
 
 
 class ScaleFormula:
@@ -172,9 +172,26 @@ class Scale:
         self.root_note = root_note
         self.formula = formula
 
+        self._all_notes = NoteArray(self.DEFAULT_NOTE_ORDER)
+
     def notes_in_scale(self) -> NoteArray:
 
-        pass
+        # find root note index
+        i = self._all_notes.index(self.root_note)
+
+        result_array = []
+
+        for used_in_scale in self.formula.note_map:
+
+            if used_in_scale:
+                result_array.append(copy(self._all_notes[i]))
+
+            i+=1
+
+            # TODO: wrap octave around !
+
+        return NoteArray(result_array)
+
 
     def notes_not_in_scale(self):
         pass
