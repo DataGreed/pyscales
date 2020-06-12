@@ -90,7 +90,8 @@ class NoteArray:
 
         if isinstance(index, slice):
             # Get the start, stop, and step from the slice
-            return [self[ii] for ii in range(*index.indices(10*9))]
+            # return [self[ii] for ii in range(*index.indices(10*9))]
+            return [self[ii] for ii in range(index.start, index.stop)]
 
         elif isinstance(index, int):
 
@@ -113,7 +114,15 @@ class NoteArray:
         return self.get_note_index(note)
 
     def get_note_index(self, note:Note):
+        # TODO: implement! don't forget to take octave in account if enabled
         pass
+
+        if self.simulate_octaves:
+            # TODO: fix: there should be much better way to find it knowing the octave
+            # than just iterating
+            return self[-300:300].index(note) - 300 # index can be negative
+
+        return self.notes.index(note)
 
     def __str__(self):
 
@@ -139,7 +148,17 @@ class Scale:
     Represents a musical scale
     """
 
-    pass
+    def __init__(self, root_note:Note, formula: ScaleFormula):
+
+        self.root_note = root_note
+        self.formula = formula
+
+    def notes_in_scale(self) -> NoteArray:
+
+        pass
+
+    def notes_not_in_scale(self):
+        pass
 
 
 class PianoKey:
