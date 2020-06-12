@@ -12,12 +12,15 @@ class Note:
     FLAT_SYMBOL = "b"
 
     NOTE_NAME_SHARP_TO_FLAT_SYNONYMS = {
-
+        "C#": "Db",
+        "D#": "Eb",
+        "F#": "Gb",
+        "G#": "Ab",
+        "A#": "Bb",
     }
 
-    NOTE_NAME_FLAT_TO_SHARP_SYNONYMS = {  # bemol
-
-    }
+    # bemol
+    NOTE_NAME_FLAT_TO_SHARP_SYNONYMS = {y:x for x,y in NOTE_NAME_SHARP_TO_FLAT_SYNONYMS.items()}
 
     def __init__(self, note_name: str, octave_number:int = 0):
 
@@ -46,7 +49,7 @@ class Note:
     @classmethod
     def any_to_sharp_name(cls, note_name):
         if cls.FLAT_SYMBOL in note_name:
-            return cls.NOTE_NAME_SHARP_TO_FLAT_SYNONYMS[note_name]
+            return cls.NOTE_NAME_FLAT_TO_SHARP_SYNONYMS[note_name]
         else:
             return note_name
 
@@ -195,6 +198,11 @@ class Scale:
 
     def notes_not_in_scale(self):
         pass
+
+
+    def __str__(self):
+        # TODO: change flats and sharps so note names will be unique across scale
+        return str(self.notes_in_scale())
 
 
 class PianoKey:
