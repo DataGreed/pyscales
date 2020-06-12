@@ -134,19 +134,38 @@ class ScaleFormula:
     Represents a tonal formula that is used to build up a scale
     from any given root note
     """
-    def __init__(self, formula:list, name:str="Unnamed"):
 
-        if not all(isinstance(i, bool) for i in formula):
-            raise ValueError(f"All value in formula list must be booleans.")
+    def __init__(self, formula:str, name:str="Unnamed"):
+
+
+
 
         self.formula = formula
+        self.note_map = self.note_map_from_formula_string(formula)
         self.name = name
+
+    @classmethod
+    def note_map_from_formula_string(cls, formula: str):
+        result = [True] # root note is always played
+        for char in formula:
+            if char.lower() in ['w', 't']:  # whole tone
+                result+=[False, True]  # skip one semitone, map semitone that goes next
+            elif char.lower() in ['h', 's']:    # half tone/ semitone
+                result.append(True) # map next semitone
+            else:
+                raise ValueError()
+
+        return result
 
 
 class Scale:
     """
     Represents a musical scale
     """
+
+    DEFAULT_NOTE_ORDER = [Note("a"), Note("a#"), Note("b"), Note("c"),
+                          Note("c#"), Note("d"), Note("d#"), Note("e"),
+                          Note("f"), Note("f#"), Note("g"), Note("g#")]
 
     def __init__(self, root_note:Note, formula: ScaleFormula):
 
