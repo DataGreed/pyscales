@@ -52,5 +52,15 @@ True
  
 >>> print(x.render_keys_in_ascii());print(x.render_note_scale_in_ascii(Scale(Note("C"), scaleformulas.MINOR_FORMULA)))
  □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □   □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □  
- F0      G0  G#0     A#0     C1      D1  D#1     F1      G1  G#1     A#1     C2      D2  D#2 
+ F0      G0  G#0     A#0     C1      D1  D#1     F1      G1  G#1     A#1     C2      D2  D#2
+ 
+>>>  print(x.render_keys_in_ascii());print(x.render_note_scale_in_ascii(Scale(Note("C"), scaleformulas.MINOR_FORMULA)))
+ □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □   □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □  
+ F0      G0  G#0     A#0     C1      D1  D#1     F1      G1  G#1     A#1     C2      D2  D#2
+     
+>>> x.tune(semitones = 3)   # raise every key by 3 semitones
+>>> print(x.render_keys_in_ascii());print(x.render_note_scale_in_ascii(Scale(Note("C"), scaleformulas.MINOR_FORMULA)))
+ □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □   □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □  
+ G#0     A#1     C0      D0  D#1     F1      G1  G#1     A#2     C1      D1  D#2     F2      G2  
+ 
 ```
