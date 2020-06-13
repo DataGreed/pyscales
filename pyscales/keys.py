@@ -1,4 +1,6 @@
-from .primitives import Note, NoteArray, Scale
+from copy import copy
+
+from .primitives import Note, NoteArray, Scale, ToneDelta
 
 
 class PianoKey:
@@ -9,11 +11,11 @@ class PianoKey:
     WHITE_KEYS = [True, False, True, False, True, True, False, True, False, True, False, True]
     BLACK_KEYS = [not x for x in WHITE_KEYS]
 
-    DEFAULT_NOTES = []
-
     KEYS_IN_OCTAVE = 12
 
-    def __init__(self, key_number: int, octave_number: int = 0, note: Note=None):
+    DEFAULT_NOTES_ORDER = NoteArray(NoteArray.DEFAULT_NOTE_ORDER)
+
+    def __init__(self, key_number: int, octave_number: int = 0):
         """
 
         :param key_number: number of key in octave, 1-based
@@ -33,11 +35,35 @@ class PianoKey:
 
         self.key_number = key_number
         self.octave_number = octave_number
-        self.original_note = note
-        self.tuned_note = note
 
+        # find and save original note that should be played with this key
+        self.original_note = copy(self.DEFAULT_NOTES_ORDER[key_number-1]) # key number is zero-based
+        self.original_note.octave_number = octave_number
 
-    # todo: tune method
+        self.tuned_note = copy(self.original_note)
+
+    def white(self):
+        return self.WHITE_KEYS[self.key_number-1]  # key number is zero-based
+
+    def black(self):
+        return not self.white()
+
+    def note(self) -> Note:
+        return copy(self.tuned_note)
+
+    def tune(self, semitones, use_original_note=True):
+        """
+        Tunes note played by this key by number of semitones provided.
+        :param semitones: number of semitones to shift note, can be negative
+        :param use_original_note: if true, tunes relative to the original note set to this key.
+        If False, tunes relative to the last tuned note.
+        :return:
+        """
+        if use_original_note:
+            self.tuned_note = self.original_note + ToneDelta(semitones=semitones)
+        else:
+            self.tuned_note += ToneDelta(semitones=semitones)
+
 
 class PianoKeyboard:
     """
@@ -51,8 +77,22 @@ class PianoKeyboard:
         :param first_octave_number:
         """
         self.__semitones_tuned = 0
+        self.first_key_number=first_key_number
+        self.first_octave_number = first_octave_number
 
-        pass
+
+        self.keys = []
+
+        current_number_in_octave = first_key_number
+        current_octave=first_octave_number
+
+        for i in range(number_of_keys):
+            self.keys.append(PianoKey(key_number=current_number_in_octave, octave_number=current_octave))
+            current_number_in_octave +=1
+
+            if current_number_in_octave> PianoKey.KEYS_IN_OCTAVE:
+                current_number_in_octave = 0
+                current_octave +=1
 
     def tune(self, semitones: int):
         """
@@ -63,8 +103,9 @@ class PianoKeyboard:
         :return:
         """
         self.__semitones_tuned = semitones
-        # TODO: implement
-        pass
+
+        for key in self.keys:
+            key.tune(semitones=semitones, use_original_note=True)
 
     def get_keys_for_scale(self, scale: Scale):
         pass

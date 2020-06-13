@@ -1,5 +1,5 @@
 from pyscales.scales import ScaleFormula
 
 
-MAJOR_FORMULA = ScaleFormula("wwhwwwh")
-MINOR_FORMULA = ScaleFormula("whwwhww")
+MAJOR_FORMULA = ScaleFormula("wwhwwwh", name="Major")
+MINOR_FORMULA = ScaleFormula("whwwhww", name="Minor")
