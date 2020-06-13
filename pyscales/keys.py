@@ -1,6 +1,7 @@
 from copy import copy
 
-from .primitives import Note, NoteArray, Scale, ToneDelta
+from .primitives import Note, NoteArray, ToneDelta
+from .scales import Scale
 
 
 class PianoKey:
@@ -64,6 +65,24 @@ class PianoKey:
         else:
             self.tuned_note += ToneDelta(semitones=semitones)
 
+    def render_key_in_ascii(self):
+
+        return " □  " if self.white() else " ▩  "
+
+    def render_note_in_ascii(self, render_octave=True):
+        # TODO: control note name selection fron synonims
+
+        note_label = self.note().note_name
+        if render_octave:
+            note_label += str(self.note().octave_number)
+
+        result = f" {note_label}"
+
+        # needs to be four chars wide to align with keys
+        if len(result) < 4:
+            result += " " * (4-len(result))
+        return result
+
 
 class PianoKeyboard:
     """
@@ -91,7 +110,7 @@ class PianoKeyboard:
             current_number_in_octave +=1
 
             if current_number_in_octave> PianoKey.KEYS_IN_OCTAVE:
-                current_number_in_octave = 0
+                current_number_in_octave = 1 # 1-based
                 current_octave +=1
 
     def tune(self, semitones: int):
@@ -111,10 +130,23 @@ class PianoKeyboard:
         pass
 
     def render_keys_in_ascii(self):
+
+        result = ""
+        for key in self.keys:
+            result += key.render_key_in_ascii()
+        return result
+
+    def render_notes_in_ascii(self, render_octave_number=True):
+
+        result = ""
+        for key in self.keys:
+            result += key.render_note_in_ascii(render_octave=render_octave_number)
+        return result
+
+
+    def render_note_scale_in_ascii(self, scale: Scale):
+
         pass
 
-    def render_notes_in_ascii(self):
-        pass
-
-    def render_scale_in_ascii(self, scale: Scale):
-        pass
+    def copy(self):
+        return copy(self)
