@@ -43,7 +43,7 @@ class PianoKeyboard:
     """
     Represents a piano keyboard
     """
-    def __init__(self, number_of_keys: int, first_key_number: int, first_octave_number: int):
+    def __init__(self, number_of_keys: int, first_key_number: int, first_octave_number: int=0):
         """
 
         :param number_of_keys:
