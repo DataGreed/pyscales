@@ -1,6 +1,42 @@
 from copy import copy
 
 
+class ToneDelta:
+    """
+    Represents difference between notes in semitones
+    """
+    def __init__(self, semitones: int):
+        self.semitones = semitones
+
+
+    def __eq__(self, other):
+
+        return self.semitones == other.semitones
+
+    def __add__(self, other):
+
+        return ToneDelta(self.semitones + other.semitones)
+
+    def __sub__(self, other):
+        return ToneDelta(self.semitones + other.semitones)
+
+    def __mul__(self, other):
+
+        if isinstance(other, int):
+
+            return ToneDelta(self.semitones * other)
+
+        raise ValueError("Can only multiply by integer")
+
+    def __str__(self):
+
+        return f"d{self.semitones}"
+
+    def __repr__(self):
+
+        return f"<ToneDelta {self.semitones}>"
+
+
 class Note:
     """
     Represents a musical note
@@ -35,6 +71,39 @@ class Note:
     def __eq__(self, other):
 
         return self.note_name == other.note_name and self.octave_number == other.octave_number
+
+    def __add__(self, other):
+
+        # TODO: cache this somewhere
+        notes_order = NoteArray(NoteArray.DEFAULT_NOTE_ORDER)
+
+        try:
+            this_note_index = notes_order.index(self)
+
+            return notes_order[this_note_index+other.semitones]
+
+        except AttributeError:
+            raise ValueError("Use ToneDelta objects to add and subtract notes")
+
+    def __sub__(self, other):
+
+        # TODO: cache this somewhere
+        notes_order = NoteArray(NoteArray.DEFAULT_NOTE_ORDER)
+
+        this_note_index = notes_order.index(self)
+
+        if hasattr(other, 'semitones'):
+
+            return notes_order[this_note_index-other.semitones]
+
+        elif isinstance(other, Note):
+
+            other_not_index = notes_order.index(other)
+
+            return ToneDelta(this_note_index-other_not_index)
+
+        raise ValueError("Can only subtract ToneDelta or other Note")
+
 
     def __str__(self):
 
@@ -217,18 +286,19 @@ class PianoKey:
 
     KEYS_IN_OCTAVE = 12
 
-    def __init__(self, key_number: int, octave_number: int = 0):
+    def __init__(self, key_number: int, octave_number: int = 0, note: Note=None):
         """
 
         :param key_number: number of key in octave, 1-based
         :param octave_number: octave number, can be negative
+        :param note: not to play when pressed
         """
 
         # TODO: should octaves have relative-based numbering or?..
         # of we can use midi numbers
         # https://www.inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies
         # https://ultimatemusictheory.com/piano-key-numbers/
-        # shpould default octave be 4 and disallow negative octaves?
+        # should default octave be 4 and disallow negative octaves?
         if key_number < 1 or key_number > self.KEYS_IN_OCTAVE:
 
             raise ValueError(f"Piano key number should be between 1 "
@@ -236,6 +306,8 @@ class PianoKey:
 
         self.key_number = key_number
         self.octave_number = octave_number
+        self.original_note = note
+        self.tuned_note = note
 
 
     # todo: tune method
@@ -245,7 +317,12 @@ class PianoKeyboard:
     Represents a piano keyboard
     """
     def __init__(self, number_of_keys: int, first_key_number: int, first_octave_number: int):
+        """
 
+        :param number_of_keys:
+        :param first_key_number: first key, 1-based
+        :param first_octave_number:
+        """
         self.__semitones_tuned = 0
 
         pass
