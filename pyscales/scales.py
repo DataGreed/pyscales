@@ -80,7 +80,9 @@ class Scale:
         except ValueError:
             return False
 
+    def scale_name(self):
 
+        return f"{self.root_note.note_name} {self.formula.name}"
 
     def __str__(self):
         # TODO: change flats and sharps so note names will be unique across scale

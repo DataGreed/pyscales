@@ -101,7 +101,7 @@ class PianoKeyboard:
     """
     Represents a piano keyboard
     """
-    def __init__(self, number_of_keys: int, first_key_number: int, first_octave_number: int=0):
+    def __init__(self, number_of_keys: int, first_key_number: int, first_octave_number: int=0, name="Unnamed"):
         """
 
         :param number_of_keys:
@@ -112,6 +112,7 @@ class PianoKeyboard:
         self.first_key_number=first_key_number
         self.first_octave_number = first_octave_number
 
+        self.name = name
 
         self.keys = []
 
