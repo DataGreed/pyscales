@@ -156,11 +156,28 @@ class PianoKeyboard:
 
         return result
 
-    def render_keys_in_ascii(self):
+    def render_keys_in_ascii(self, two_lines=True):
 
         result = ""
-        for key in self.keys:
-            result += key.render_key_in_ascii()
+        if two_lines:
+            for key in self.keys:
+                if key.black():
+                    result += key.render_key_in_ascii()
+                else:
+                    result += key.render_blank_note_in_ascii()
+
+            result += "\n"
+
+            for key in self.keys:
+                if key.white():
+                    result += key.render_key_in_ascii()
+                else:
+                    result += key.render_blank_note_in_ascii()
+
+        else:
+
+            for key in self.keys:
+                result += key.render_key_in_ascii()
         return result
 
     def render_notes_in_ascii(self, render_octave_number=True):
