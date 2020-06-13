@@ -26,7 +26,9 @@ class ScaleFormula:
             else:
                 raise ValueError()
 
-        return result
+        # last note in formula is always duplicated, we don;t need that in the map
+        # if weleave it in, NoteArray will be giving wrong results when wrapping around
+        return result[:-1]
 
 
 class Scale:
