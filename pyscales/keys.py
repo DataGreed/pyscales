@@ -140,7 +140,20 @@ class PianoKeyboard:
             key.tune(semitones=semitones, use_original_note=True)
 
     def get_keys_for_scale(self, scale: Scale):
-        pass
+        """
+        Returns array of keys that correspond to given scale
+        :param scale:
+        :return:
+        """
+        result = []
+
+        for key in self.keys:
+
+            if scale.is_in_scale(key.note()):
+
+                result.append(key)
+
+        return result
 
     def render_keys_in_ascii(self):
 
@@ -156,7 +169,7 @@ class PianoKeyboard:
             result += key.render_note_in_ascii(render_octave=render_octave_number)
         return result
 
-    def render_note_scale_in_ascii(self, scale: Scale):
+    def render_note_scale_in_ascii(self, scale: Scale, render_octave_number=True):
 
         result = ""
 
@@ -164,7 +177,7 @@ class PianoKeyboard:
 
             if scale.is_in_scale(key.note()):
 
-                result += key.render_note_in_ascii()
+                result += key.render_note_in_ascii(render_octave=render_octave_number)
             else:
 
                 result += key.render_blank_note_in_ascii()
