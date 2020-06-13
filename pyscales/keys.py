@@ -14,7 +14,13 @@ class PianoKey:
 
     KEYS_IN_OCTAVE = 12
 
-    DEFAULT_NOTES_ORDER = NoteArray(NoteArray.DEFAULT_NOTE_ORDER)
+    # keyboards
+    DEFAULT_NOTES_ORDER_LIST = [ Note("c"), Note("c#"), Note("d"),
+                                 Note("d#"), Note("e"), Note("f"),
+                                 Note("f#"), Note("g"), Note("g#"),
+                                 Note("a"), Note("a#"), Note("b")]
+
+    DEFAULT_NOTES_ORDER = NoteArray(DEFAULT_NOTES_ORDER_LIST)
 
     def __init__(self, key_number: int, octave_number: int = 0):
         """
@@ -83,6 +89,13 @@ class PianoKey:
             result += " " * (4-len(result))
         return result
 
+    def render_blank_note_in_ascii(self):
+        """
+        renders blank space instead of note
+        :return:
+        """
+        return " " * 4
+
 
 class PianoKeyboard:
     """
@@ -143,10 +156,20 @@ class PianoKeyboard:
             result += key.render_note_in_ascii(render_octave=render_octave_number)
         return result
 
-
     def render_note_scale_in_ascii(self, scale: Scale):
 
-        pass
+        result = ""
+
+        for key in self.keys:
+
+            if scale.is_in_scale(key.note()):
+
+                result += key.render_note_in_ascii()
+            else:
+
+                result += key.render_blank_note_in_ascii()
+
+        return result
 
     def copy(self):
         return copy(self)

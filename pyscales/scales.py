@@ -69,6 +69,18 @@ class Scale:
     def notes_not_in_scale(self):
         pass
 
+    def is_in_scale(self, note: Note) -> bool:
+
+        try:
+            # try to find index in scale
+            # TODO: cache notes_in_scale
+            self.notes_in_scale().index(note)
+            return True
+
+        except ValueError:
+            return False
+
+
 
     def __str__(self):
         # TODO: change flats and sharps so note names will be unique across scale

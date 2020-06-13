@@ -142,6 +142,7 @@ class NoteArray:
 
     Based on https://stackoverflow.com/questions/22122623/
     """
+    # TODO: is there any use starting it with a? Should we start it with c instead? Won't it break octave wrapping?
     DEFAULT_NOTE_ORDER = [Note("a"), Note("a#"), Note("b"), Note("c"),
              Note("c#"), Note("d"), Note("d#"), Note("e"),
              Note("f"), Note("f#"), Note("g"), Note("g#")]
