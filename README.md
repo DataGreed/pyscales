@@ -35,7 +35,7 @@ True
 ```
 
 ## Device Keyboards
-```
+```python
 >>> from pyscales import devicekeyboards
 >>> x = devicekeyboards.op1_keyboard.copy()
 >>> print(x.render_keys_in_ascii());print(x.render_notes_in_ascii())
