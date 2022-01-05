@@ -45,7 +45,10 @@ True
 >>> print(x.render_keys_in_ascii());print(x.render_notes_in_ascii(False))
  □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □   □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □  
  F   F#  G   G#  A   A#  B   C   C#  D   D#  E   F   F#  G   G#  A   A#  B   C   C#  D   D#  E  
- 
+
+>>> from pyscales import scaleformulas
+>>> from pyscales.primitives import Note
+>>> from pyscales.scales import Scale
 >>> print(x.render_keys_in_ascii());print(x.render_note_scale_in_ascii(Scale(Note("C"), scaleformulas.MAJOR_FORMULA)))
  □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □   □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □  
  F0      G0      A0      B0  C1      D1      E1  F1      G1      A1      B1  C2      D2      E2
