@@ -64,3 +64,9 @@ True
  G#0     A#1     C0      D0  D#1     F1      G1  G#1     A#2     C1      D1  D#2     F2      G2  
  
 ```
+
+## TODOs
+
+- chords
+- modes
+- frequencies
