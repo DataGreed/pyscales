@@ -32,6 +32,12 @@ True
 
 >>> Note("a") + ToneDelta(semitones=2)*2
 <Note C#0>
+
+>>> Note("a", 4).frequency # in Hz
+440
+
+>>> Note("b", 4).frequency  # in Hz
+493.8833012561241
 ```
 
 ## Device Keyboards
