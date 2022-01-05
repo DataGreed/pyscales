@@ -60,7 +60,7 @@ class Note:
     # bemol
     NOTE_NAME_FLAT_TO_SHARP_SYNONYMS = {y:x for x,y in NOTE_NAME_SHARP_TO_FLAT_SYNONYMS.items()}
 
-    def __init__(self, note_name: str, octave_number:int = 0):
+    def __init__(self, note_name: str, octave_number:int = 0):  # FIXME:should we use 4 octave as default? will NoteArray still work properly?
 
         note_name = note_name[0].upper() + note_name[1:]
 

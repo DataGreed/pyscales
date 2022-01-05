@@ -87,4 +87,5 @@ True
 - chord transposing by adding or subtracting tonedeltas
 - init chord from given notes (check if matches any formula)
 - find nearest note to a given frequency
+- pip package
 - ~~note frequencies~~
