@@ -80,7 +80,10 @@ True
 - midi note numbers
 - init note from midi number
 - intervals (are there any scientific notations for intervals?)
-- chords with formulas, names and notes they consist of (don't forget octaves and root notes)
+- add and subtract intervals within a context of a scale
+- chords with scales, chord names and notes they consist of (don't forget octaves and root notes)
 - chords in given scales (similar to notes_in_scale method)
+- chord transposing by adding or subtracting tonedeltas
 - init chord from given notes (check if matches any formula)
-- ~~frequencies~~
+- find nearest note to a given frequency
+- ~~note frequencies~~
