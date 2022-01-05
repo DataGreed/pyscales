@@ -36,9 +36,10 @@ class Scale:
     Represents a musical scale
     """
 
-    DEFAULT_NOTE_ORDER = [Note("a"), Note("a#"), Note("b"), Note("c"),
+    DEFAULT_NOTE_ORDER = [Note("c"),
                           Note("c#"), Note("d"), Note("d#"), Note("e"),
-                          Note("f"), Note("f#"), Note("g"), Note("g#")]
+                          Note("f"), Note("f#"), Note("g"), Note("g#"),
+                          Note("a"), Note("a#"), Note("b")]
 
     def __init__(self, root_note:Note, formula: ScaleFormula):
 
