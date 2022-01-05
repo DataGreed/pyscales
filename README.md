@@ -1,7 +1,7 @@
 # pyscales
 Python musical scales handling and piano keys transposing
 
-![tests](https://github.com/DataGreed/pyscales/actions/workflows/python-app.yml/badge.svg)
+[![tests](https://github.com/DataGreed/pyscales/actions/workflows/python-app.yml/badge.svg)](https://github.com/DataGreed/pyscales/actions/workflows/python-app.yml)
 
 # Quick & Dirty examples
 
