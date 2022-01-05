@@ -32,6 +32,12 @@ True
 
 >>> Note("a") + ToneDelta(semitones=2)*2
 <Note C#0>
+
+>>> Note("a", 4).frequency # in Hz
+440
+
+>>> Note("b", 4).frequency  # in Hz
+493.8833012561241
 ```
 
 ## Device Keyboards
@@ -45,7 +51,10 @@ True
 >>> print(x.render_keys_in_ascii());print(x.render_notes_in_ascii(False))
  □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □   □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □  
  F   F#  G   G#  A   A#  B   C   C#  D   D#  E   F   F#  G   G#  A   A#  B   C   C#  D   D#  E  
- 
+
+>>> from pyscales import scaleformulas
+>>> from pyscales.primitives import Note
+>>> from pyscales.scales import Scale
 >>> print(x.render_keys_in_ascii());print(x.render_note_scale_in_ascii(Scale(Note("C"), scaleformulas.MAJOR_FORMULA)))
  □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □   □   ▩   □   ▩   □   ▩   □   □   ▩   □   ▩   □  
  F0      G0      A0      B0  C1      D1      E1  F1      G1      A1      B1  C2      D2      E2
@@ -67,6 +76,14 @@ True
 
 ## TODOs
 
-- chords
 - modes
-- frequencies
+- midi note numbers
+- init note from midi number
+- intervals (are there any scientific notations for intervals?)
+- add and subtract intervals within a context of a scale
+- chords with scales, chord names and notes they consist of (don't forget octaves and root notes)
+- chords in given scales (similar to notes_in_scale method)
+- chord transposing by adding or subtracting tonedeltas
+- init chord from given notes (check if matches any formula)
+- find nearest note to a given frequency
+- ~~note frequencies~~
