@@ -77,7 +77,7 @@ True
 
 ## TODOs
 
-- modes
+- ~~modes~~
 - midi note numbers
 - init note from midi number
 - intervals (are there any scientific notations for intervals?)
