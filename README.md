@@ -67,6 +67,11 @@ True
 
 ## TODOs
 
-- chords
 - modes
-- frequencies
+- midi note numbers
+- init note from midi number
+- intervals (are there any scientific notations for intervals?)
+- chords with formulas, names and notes they consist of (don't forget octaves and root notes)
+- chords in given scales (similar to notes_in_scale method)
+- init chord from given notes (check if matches any formula)
+- ~~frequencies~~

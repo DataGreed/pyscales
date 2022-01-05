@@ -1,5 +1,7 @@
 from copy import copy
 
+from pyscales import constants
+
 
 class ToneDelta:
     """
@@ -66,6 +68,12 @@ class Note:
             raise ValueError(f"Invalid note name {note_name}. Valid names include: {', '.join(self.VALID_NOTE_NAMES)}")
 
         self.note_name = self.any_to_sharp_name(note_name)
+
+        # if octave_number < constants.LOWEST_OCTAVE_NUMBER or octave_number>constants.HIGHEST_OCTAVE_NUMBER:
+        ## fixme: this breaks NoteAray warping calculations now. Fix it and still have a value check
+        #     raise ValueError(f"Octave number {octave_number} is not "
+        #                      f"within {constants.LOWEST_OCTAVE_NUMBER}...{constants.HIGHEST_OCTAVE_NUMBER} range")
+
         self.octave_number = octave_number
 
     def __eq__(self, other):
@@ -130,6 +138,29 @@ class Note:
     def flat_to_sharp_name(cls, note_name):
         return cls.NOTE_NAME_FLAT_TO_SHARP_SYNONYMS[note_name]
 
+    @property
+    def frequency(self):
+        """
+        Calculates and returns the frequency of the note.
+        Uses fundamental note frequency defined in constants.
+
+        Base on a formula from https://pages.mtu.edu/~suits/NoteFreqCalcs.html
+        """
+        if (self.note_name == constants.FUNDAMENTAL_NOTE_NAME) and (self.octave_number == constants.FUNDAMENTAL_NOTE_OCTAVE):
+            return constants.FUNDAMENTAL_NOTE_FREQUENCY
+
+        # TODO: pre-calculate all note frequencies on init? Or at least chache them
+        # TODO: cache fundamental note somewhere for faster calculations
+        fundamental_note = Note(constants.FUNDAMENTAL_NOTE_NAME, constants.FUNDAMENTAL_NOTE_OCTAVE)
+        halfsteps_away_from_fund_note = (self - fundamental_note).semitones
+
+        frequency = constants.FUNDAMENTAL_NOTE_FREQUENCY*(constants.TWELFTH_ROOT_OF_TWO**halfsteps_away_from_fund_note)
+
+        # print(f"frequency debug: {locals()}")
+
+        return frequency
+
+
 
 class NoteArray:
     """
@@ -142,10 +173,12 @@ class NoteArray:
 
     Based on https://stackoverflow.com/questions/22122623/
     """
-    # TODO: is there any use starting it with a? Should we start it with c instead? Won't it break octave wrapping?
-    DEFAULT_NOTE_ORDER = [Note("a"), Note("a#"), Note("b"), Note("c"),
+
+    # IMPORTANT: note that octave numbering always starts with C, does not matter which scale you're using.
+    DEFAULT_NOTE_ORDER = [Note("c"),
              Note("c#"), Note("d"), Note("d#"), Note("e"),
-             Note("f"), Note("f#"), Note("g"), Note("g#")]
+             Note("f"), Note("f#"), Note("g"), Note("g#"),
+            Note("a"), Note("a#"), Note("b")]
 
     def __init__(self, notes=None, simulate_octaves=True):
         """
