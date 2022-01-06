@@ -78,14 +78,16 @@ True
 ## TODOs
 
 - ~~modes~~
-- ~~ midi note numbers (see https://musicinformationretrieval.com/midi_conversion_table.html and https://www.inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies)~~
+- ~~midi note numbers (see https://musicinformationretrieval.com/midi_conversion_table.html and https://www.inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies)~~
 - ~~init note from midi number~~
 - intervals 
   - addition and subtraction in scale
   - finding qualities of interval in scale (notation - https://en.wikipedia.org/wiki/Interval_(music)#Shorthand_notation, quality - https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals)
   - check interval between two notes in scale
-- add and subtract intervals within a context of a scale
+- consonance and dissonance of intervals
 - chords with scales, chord names and notes they consist of (don't forget octaves and root notes) - https://en.wikipedia.org/wiki/List_of_chords - also https://en.wikipedia.org/wiki/Interval_(music)#Chord_qualities_and_interval_qualities
+- consonance and dissonance of scales
+- interval inversion
 - chords in given scales (similar to notes_in_scale method) 
 - chord transposing by adding or subtracting tonedeltas
 - init chord from given notes (check if matches any formula)

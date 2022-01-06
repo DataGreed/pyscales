@@ -208,23 +208,56 @@ INTERVAL_QUALITY_MAP = {
 }
 
 
+class IntervalInScale:
+    """
+    Use this to move up and down a scale by given number of staff positions.
+    Add or subtract this to your notes.
+
+    Not sure what's the correct name for this - degree? Interval in scale? Step?
+
+    This entity is not quality-aware
+    """
+
+    def __init__(self, staff_positions: int, scale: Scale):
+        self.staff_positions: int = staff_positions
+        self.scale: Scale = scale
+
+    def __add__(self, other):
+        raise NotImplementedError()
+        pass
+
+    def __sub__(self, other):
+        # FIXME: should it be in Note?.. should we use some method in this class when calling it
+        #  from note so logic will live here? should we just call __add__ with negative value from this class?
+        raise NotImplementedError()
+        pass
+
+    # there is no __eq__ overload as it does not seem to make a lot of sense to compare this entities
+
+
 class Interval:
+    """
+    Interval between notes.
+    Characterized by quality. Not aware of scale.
+    """
 
     # see https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
     # also https://en.wikipedia.org/wiki/Interval_(music)#Compound_intervals
 
-    def __init__(self, staff_positions: int, scale: Scale):
+    def __init__(self, staff_positions: int, quality: IntervalQuality):
         """
         @staff_positions - difference in staff positions  between notes. Zero-based.
-        E.g. to get a Perfect Fifth, set this to 4
+        E.g. to get a Fifth, set this to 4
         see. https://en.wikipedia.org/wiki/Staff_(music)#Staff_positions
         """
         self.staff_positions: int = staff_positions
-        self.scale: Scale = scale
+
+
+        # todo: accept semitones instead of quality to determine it automatically and vica-versa
 
         # can only be identified when we have at least one note to count interval from
         # because quality depends on relation between staff positions and semitone difference between two notes
-        self.quality: Optional[IntervalQuality] = None
+        self.quality: IntervalQuality = quality
 
 
     def __add__(self, other):
@@ -236,6 +269,10 @@ class Interval:
         #  from note so logic will live here? should we just call __add__ with negative value from this class?
         raise NotImplementedError()
         pass
+
+    def __eq__(self, other):
+        # todo: implement
+        raise NotImplementedError()
 
 
     def get_quantitative_name(self) -> str:
@@ -259,11 +296,26 @@ class Interval:
         @staff_positions - staff positions between notes in scale
         @semitones - semitones between these notes
         """
-        # TODO: there should be an algorithmic way to do this without using a map
+
+        # basically it boils down to these rules:
+        # https://music.utk.edu/theorycomp/courses/murphy/documents/Intervals.pdf
+        # (thank you Dr. Barbara Murphy for a comprehensive explanation unlike
+        # most of you find on the internet)
+
+        # Intervals are:
+
+        # - perfect if: (1) the top note is in the major key of the bottom note AND (2) the
+        # - bottom note is in the major key of the top note.
+        # - major if the top note is in the major key of the bottom note.
+        # - minor if it is a half step smaller than major.
+        # - diminished if it is a half step smaller than minor or perfect.
+        # - augmented if it is a half step larger than major or perfect.
+
+        # TODO: there should probably be an algorithmic way to do this without using a map that is easily computable
 
         if semitone_difference > 12:
-            # todo: shouldbe easy
-            raise NotImplementedError("implement compound interval support")
+            semitone_difference %= 12
+            staff_position_difference %= 7
 
         try:
 
@@ -284,7 +336,43 @@ class Interval:
         semitone_interval = (note1 - note2).semitones
         staff_interval = scale.all_notes.index(note1) - scale.all_notes.index(note2)
 
-        result = Interval(staff_interval, scale)
-        result.quality = cls.assess_quality(staff_interval, semitone_interval)
+        quality = cls.assess_quality(staff_interval, semitone_interval)
+        result = Interval(staff_interval, quality)
 
         return result
+
+
+# https://music.utk.edu/theorycomp/courses/murphy/documents/Intervals.pdf
+PERFECT_CONSONANT_INTERVALS = (
+    Interval(0, IntervalQuality.PERFECT),   # P1
+    Interval(7, IntervalQuality.PERFECT),   # P8
+    Interval(4, IntervalQuality.PERFECT),   # P5
+    # P4 is weird so it's not added here:
+        # The P4 is sometimes consonant and sometimes dissonant.
+        # In early music, P4 was a consonance and with other perfect intervals made up
+        # most of music compositions.
+        # Later, when using complete triads, the 4th tended to lose some of its stability and
+        # consonance (sounded like active tone between 5th and 3rd). If it appeared
+        # near a 5th (its inversion), then it was stable.
+        # SO -- the P4 is a consonant when it functions as an inverted 5th (as part of the
+        # chord); otherwise, it is dissonant.
+)
+
+IMPERFECT_CONSONANT_INTERVALS = (
+    Interval(2, IntervalQuality.MINOR),   # m3
+    Interval(2, IntervalQuality.MAJOR),   # M3
+    Interval(5, IntervalQuality.MINOR),   # m6
+    Interval(5, IntervalQuality.MAJOR),   # M6
+)
+
+CONSONANT_INTERVALS = PERFECT_CONSONANT_INTERVALS + IMPERFECT_CONSONANT_INTERVALS
+
+DISSONANT_INTERVALS = (
+    Interval(1, IntervalQuality.MINOR),  # m2
+    Interval(1, IntervalQuality.MAJOR),  # M2
+    Interval(6, IntervalQuality.MINOR),  # m7
+    Interval(6, IntervalQuality.MAJOR),  # M7
+    # tritones
+    Interval(4, IntervalQuality.DIMINISHED), # d5 - diminished 5th, tritone
+    Interval(3, IntervalQuality.AUGMENTED), # A4 - augmented 4th, tritone
+)
