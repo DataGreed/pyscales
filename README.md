@@ -85,8 +85,8 @@ True
   - finding qualities of interval in scale (notation - https://en.wikipedia.org/wiki/Interval_(music)#Shorthand_notation, quality - https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals)
   - check interval between two notes in scale
 - add and subtract intervals within a context of a scale
-- chords with scales, chord names and notes they consist of (don't forget octaves and root notes) - https://en.wikipedia.org/wiki/List_of_chords
-- chords in given scales (similar to notes_in_scale method)
+- chords with scales, chord names and notes they consist of (don't forget octaves and root notes) - https://en.wikipedia.org/wiki/List_of_chords - also https://en.wikipedia.org/wiki/Interval_(music)#Chord_qualities_and_interval_qualities
+- chords in given scales (similar to notes_in_scale method) 
 - chord transposing by adding or subtracting tonedeltas
 - init chord from given notes (check if matches any formula)
 - find nearest note to a given frequency

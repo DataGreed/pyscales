@@ -1,5 +1,6 @@
 from copy import copy
 from enum import Enum
+from typing import Optional
 
 from .primitives import Note, NoteArray
 
@@ -90,6 +91,10 @@ class Scale:
         # TODO: change flats and sharps so note names will be unique across scale
         return str(self.notes_in_scale())
 
+    @property
+    def all_notes(self):
+        return self._all_notes
+
 
 class IntervalQuality(Enum):
      PERFECT = 0
@@ -97,6 +102,15 @@ class IntervalQuality(Enum):
      MAJOR = 2
      DIMINISHED = 3
      AUGMENTED = 4
+
+     def name(self):
+         return INTERVAL_QUALITY_NAMES[self]
+
+     def short_name(self):
+         return INTERVAL_QUALITY_SHORT_NAME[self]
+
+     def notation(self):
+         return INTERVAL_QUALITY_NOTATION[self]
 
 # todo: also add scientific notations
 INTERVAL_QUALITY_NAMES = {
@@ -107,30 +121,170 @@ INTERVAL_QUALITY_NAMES = {
     IntervalQuality.AUGMENTED: "Augmented",
 }
 
-# TODO: interval names. They depend on staff poisition and quality
+INTERVAL_QUALITY_SHORT_NAME = {
+    IntervalQuality.PERFECT: "perf",
+    IntervalQuality.MINOR: "min",
+    IntervalQuality.MAJOR: "maj",
+    IntervalQuality.DIMINISHED: "dim",
+    IntervalQuality.AUGMENTED: "aug",
+}
+
+
+# see https://en.wikipedia.org/wiki/Interval_(music)#Shorthand_notation
+INTERVAL_QUALITY_NOTATION = {
+    IntervalQuality.PERFECT: "P",
+    IntervalQuality.MINOR: "m",
+    IntervalQuality.MAJOR: "M",
+    IntervalQuality.DIMINISHED: "d",
+    IntervalQuality.AUGMENTED: "A",
+}
+
+# interval quality map
+# based on https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
+# They depend on staff position and quality
+# there is logic behind it but its kind of complicated so it's easier to use this map
+# to determine quality from staff positions and semitone difference.
+
+# anyway, I would be glad if there was a more elegant way to determine interval quality.
+# if an interval is compound, subtract 12 from semitones and 7 from staff position difference
+# to use this map (test this!)
+# map usage:
+# INTERVAL_QUALITY_MAP[semitone_difference][staff_position_difference] -> IntervalQuality
+INTERVAL_QUALITY_MAP = {
+    # semitone difference as main dictionary key
+    0: {
+        # staff position _difference_, zero-based (0 for unison, 1 for second degree, 7 for octave, etc.)
+        0: IntervalQuality.PERFECT,     # P1 - perfect unison
+        1: IntervalQuality.DIMINISHED   # d2 - diminished second
+    },
+    1: {
+        1: IntervalQuality.MINOR,       # m2 - minor second
+        0: IntervalQuality.AUGMENTED    # A1 - augmented unison (not sure how it's possible)
+    },
+    2: {
+        1: IntervalQuality.MAJOR,       # M2 - major second
+        2: IntervalQuality.DIMINISHED   # d3 - diminished third
+    },
+    3: {
+        2: IntervalQuality.MINOR,       # m3 - minor third
+        1: IntervalQuality.AUGMENTED    # A2 - augmented second
+    },
+    4: {
+        2: IntervalQuality.MAJOR,       # M3 - major third,
+        3: IntervalQuality.DIMINISHED,  # d4 - diminished fourth
+    },
+    5: {
+        3: IntervalQuality.PERFECT,     # P4 - perfect fourth
+        2: IntervalQuality.AUGMENTED    # A3 - augmented third
+    },
+    6: {
+        4: IntervalQuality.DIMINISHED,  # d5 - diminished 5th, tritone
+        3: IntervalQuality.AUGMENTED,   # A4 - augmented fourth, tritone
+    },
+    7: {
+        4: IntervalQuality.PERFECT,     #P5 - perfect fifth
+        5: IntervalQuality.DIMINISHED,  #d6 - diminished 6th
+    },
+    8: {
+        5: IntervalQuality.MINOR,       #m6 - minor sixth
+        4: IntervalQuality.AUGMENTED,   #A5 - augmented fifth
+    },
+    9: {
+        5: IntervalQuality.MAJOR,       #M6 - major sixth
+        6: IntervalQuality.DIMINISHED,  #d7 - diminished 7th
+    },
+    10: {
+        6: IntervalQuality.MINOR,       #m7 - minor seventh
+        5: IntervalQuality.AUGMENTED    #A6 - augented sixth
+    },
+    11: {
+        6: IntervalQuality.MAJOR,       #M7 - major seventh
+        7: IntervalQuality.DIMINISHED   #d8 - diminished octave
+    },
+    12: {
+        7: IntervalQuality.PERFECT,     #P8 - perfect octave
+        6: IntervalQuality.AUGMENTED,   #A7 - augmented seventh
+    }
+}
 
 
 class Interval:
 
     # see https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
+    # also https://en.wikipedia.org/wiki/Interval_(music)#Compound_intervals
 
-    def __init__(self, staff_positions:int, scale: Scale):
+    def __init__(self, staff_positions: int, scale: Scale):
         """
-        Staff positions - number of positions in scale between notes.
+        @staff_positions - difference in staff positions  between notes. Zero-based.
+        E.g. to get a Perfect Fifth, set this to 4
         see. https://en.wikipedia.org/wiki/Staff_(music)#Staff_positions
         """
         self.staff_positions: int = staff_positions
         self.scale: Scale = scale
 
+        # can only be identified when we have at least one note to count interval from
+        # because quality depends on relation between staff positions and semitone difference between two notes
+        self.quality: Optional[IntervalQuality] = None
+
+
     def __add__(self, other):
+        raise NotImplementedError()
         pass
 
     def __sub__(self, other):
+        # FIXME: should it be in Note?.. should we use some method in this class when calling it
+        #  from note so logic will live here? should we just call __add__ with negative value from this class?
+        raise NotImplementedError()
         pass
+
+
+    def get_quantitative_name(self) -> str:
+
+        # note that the interval name is 1-based, but the actual interval is 0-based
+        # e.g. unison is called Perfect Unison and is written as P1 although notes are
+        # 0 staff positions (and semitones) apart
+
+
+        return str(self.staff_positions+1)
+
+        # +1 because 1 staff position above something is 2nd e.g. "minor 2nd"
 
     def __str__(self):
-        return f"Unidentified quality {self.staff_positions}th"
+        # TODO: make long notation option?
+        return f"{self.quality.notation() if self.quality else '?'}{self.get_quantitative_name()}"
 
-    @property
-    def quality(self) -> IntervalQuality:
-        pass
+    @classmethod
+    def assess_quality(cls, staff_position_difference, semitone_difference) -> IntervalQuality:
+        """
+        @staff_positions - staff positions between notes in scale
+        @semitones - semitones between these notes
+        """
+        # TODO: there should be an algorithmic way to do this without using a map
+
+        if semitone_difference > 12:
+            # todo: shouldbe easy
+            raise NotImplementedError("implement compound interval support")
+
+        try:
+
+            quality = INTERVAL_QUALITY_MAP[staff_position_difference][semitone_difference]
+
+        except KeyError:
+            raise ValueError(f"Cannot find interval quality corresponding to {semitone_difference} semitone "
+                             f"difference and {staff_position_difference} staff (scale) position difference")
+
+        return quality
+
+    @classmethod
+    def between_notes(cls, note1: Note, note2: Note, scale: Scale):
+        """
+        Returns an interval between two notes.
+        The returned interval has quality info.
+        """
+        semitone_interval = (note1 - note2).semitones
+        staff_interval = scale.all_notes.index(note1) - scale.all_notes.index(note2)
+
+        result = Interval(staff_interval, scale)
+        result.quality = cls.assess_quality(staff_interval, semitone_interval)
+
+        return result
