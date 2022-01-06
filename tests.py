@@ -2,7 +2,7 @@ import unittest
 
 from pyscales import constants, scaleformulas
 from pyscales.primitives import Note, NoteArray
-from pyscales.scales import Scale
+from pyscales.scales import Scale, IntervalInScale
 
 
 class TestNoteFrequencies(unittest.TestCase):
@@ -111,7 +111,21 @@ class MidiNoteValuesTest(unittest.TestCase):
 
 
 class IntervalInScaleTestCase(unittest.TestCase):
-    pass
+
+    def test_interval_in_scale_addition_to_each_other(self):
+        a = IntervalInScale(staff_positions=2, scale=Scale(Note("C", 4), scaleformulas.MINOR_FORMULA))
+        b = IntervalInScale(staff_positions=3, scale=Scale(Note("C", 4), scaleformulas.MINOR_FORMULA))
+
+        c = a+b
+
+        self.assertEqual(c.staff_positions, 5)
+
+        a = IntervalInScale(staff_positions=5, scale=Scale(Note("C", 4), scaleformulas.MINOR_FORMULA))
+        b = IntervalInScale(staff_positions=23, scale=Scale(Note("C", 4), scaleformulas.MINOR_FORMULA))
+
+        c = a + b
+
+        self.assertEqual(c.staff_positions, 28)
 
 
 class IntervalsTestCase(unittest.TestCase):

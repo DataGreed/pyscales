@@ -50,6 +50,10 @@ class Scale:
 
         self._all_notes = NoteArray(self.DEFAULT_NOTE_ORDER)
 
+    def __eq__(self, other):
+
+        return (self.root_note == other.root_note) and (self.formula == other.formula)
+
     def notes_in_scale(self) -> NoteArray:
 
         # find root note index
@@ -283,7 +287,7 @@ class IntervalInScale:
 
         elif isinstance(other, IntervalInScale):
             if other.scale == self.scale:
-                return IntervalInScale(staff_positions=self.staff_positions+other.staff_positions)
+                return IntervalInScale(staff_positions=self.staff_positions+other.staff_positions, scale=self.scale)
 
             raise ValueError("Cannot add two IntervalInScale objects with different scales")
 
