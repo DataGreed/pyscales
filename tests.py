@@ -110,5 +110,12 @@ class MidiNoteValuesTest(unittest.TestCase):
             self.assertEqual(note.octave_number, line[1])
 
 
+class IntervalInScaleTestCase(unittest.TestCase):
+    pass
+
+
+class IntervalsTestCase(unittest.TestCase):
+    pass
+
 if __name__ == '__main__':
     unittest.main()

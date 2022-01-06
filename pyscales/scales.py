@@ -497,12 +497,35 @@ class Interval:
     def is_dissonant(self):
         return self in DISSONANT_INTERVALS
 
+    # TODO: inversions
+
+
+# main (non-compound, less than octave) intervals constants
+Interval.P1 = Interval(0, IntervalQuality.PERFECT)
+Interval.P8 = Interval(7, IntervalQuality.PERFECT)
+Interval.P4 = Interval(3, IntervalQuality.PERFECT)
+Interval.P5 = Interval(4, IntervalQuality.PERFECT)
+
+Interval.m2 = Interval(1, IntervalQuality.MINOR)
+Interval.m3 = Interval(2, IntervalQuality.MINOR)
+Interval.m6 = Interval(5, IntervalQuality.MINOR)
+Interval.m7 = Interval(6, IntervalQuality.MINOR)
+
+Interval.M2 = Interval(1, IntervalQuality.MAJOR)
+Interval.M3 = Interval(2, IntervalQuality.MAJOR)
+Interval.M6 = Interval(5, IntervalQuality.MAJOR)
+Interval.M7 = Interval(6, IntervalQuality.MAJOR)
+
+Interval.d5 = Interval(4, IntervalQuality.DIMINISHED)
+
+Interval.A4 = Interval(3, IntervalQuality.AUGMENTED)
+
 
 # https://music.utk.edu/theorycomp/courses/murphy/documents/Intervals.pdf
 PERFECT_CONSONANT_INTERVALS = (
-    Interval(0, IntervalQuality.PERFECT),   # P1    # TODO: add constants for all these intervals for easier reference?
-    Interval(7, IntervalQuality.PERFECT),   # P8
-    Interval(4, IntervalQuality.PERFECT),   # P5
+    Interval.P1,   # P1    # TODO: add constants for all these intervals for easier reference?
+    Interval.P8,
+    Interval.P5,   # P5
     # P4 is weird so it's not added here:
         # The P4 is sometimes consonant and sometimes dissonant.
         # In early music, P4 was a consonance and with other perfect intervals made up
@@ -515,20 +538,20 @@ PERFECT_CONSONANT_INTERVALS = (
 )
 
 IMPERFECT_CONSONANT_INTERVALS = (
-    Interval(2, IntervalQuality.MINOR),   # m3
-    Interval(2, IntervalQuality.MAJOR),   # M3
-    Interval(5, IntervalQuality.MINOR),   # m6
-    Interval(5, IntervalQuality.MAJOR),   # M6
+    Interval.m3,   # m3
+    Interval.M3,   # M3
+    Interval.m6,   # m6
+    Interval.M6,   # M6
 )
 
 CONSONANT_INTERVALS = PERFECT_CONSONANT_INTERVALS + IMPERFECT_CONSONANT_INTERVALS
 
 DISSONANT_INTERVALS = (
-    Interval(1, IntervalQuality.MINOR),  # m2
-    Interval(1, IntervalQuality.MAJOR),  # M2
-    Interval(6, IntervalQuality.MINOR),  # m7
-    Interval(6, IntervalQuality.MAJOR),  # M7
+    Interval.m2,  # m2
+    Interval.M2,  # M2
+    Interval.m7,  # m7
+    Interval.M7,  # M7
     # tritones
-    Interval(4, IntervalQuality.DIMINISHED), # d5 - diminished 5th, tritone
-    Interval(3, IntervalQuality.AUGMENTED), # A4 - augmented 4th, tritone
+    Interval.d5, # d5 - diminished 5th, tritone
+    Interval.A4, # A4 - augmented 4th, tritone
 )
