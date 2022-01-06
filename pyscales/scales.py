@@ -2,7 +2,7 @@ from copy import copy
 from enum import Enum
 from typing import Optional
 
-from .primitives import Note, NoteArray
+from .primitives import Note, NoteArray, ToneDelta
 
 
 class ScaleFormula:
@@ -207,6 +207,52 @@ INTERVAL_QUALITY_MAP = {
     }
 }
 
+# reverse map
+INTERVAL_QUALITY_TO_SEMITONE_MAP = {
+    # quality
+    IntervalQuality.PERFECT: {
+        # staff positions   # semitones
+        0:                  0,
+        3:                  5,
+        4:                  7,
+        7:                  12,
+    },
+    IntervalQuality.MAJOR: {
+        # staff positions   # semitones
+        1:                  2,
+        2:                  4,
+        5:                  9,
+        6:                  11,
+    },
+    IntervalQuality.MINOR: {
+        # staff positions   # semitones
+        1:                  1,
+        2:                  3,
+        5:                  8,
+        6:                  10,
+    },
+    IntervalQuality.DIMINISHED: {
+        # staff positions   # semitones
+        1:                  0,
+        2:                  2,
+        3:                  4,
+        4:                  6,
+        5:                  7,
+        6:                  9,
+        7:                  11,
+    },
+    IntervalQuality.AUGMENTED: {
+        # staff positions   # semitones
+        0:                  1,
+        1:                  3,
+        2:                  5,
+        3:                  6,
+        4:                  8,
+        5:                  10,
+        6:                  12,
+    }
+}
+
 
 class IntervalInScale:
     """
@@ -223,14 +269,54 @@ class IntervalInScale:
         self.scale: Scale = scale
 
     def __add__(self, other):
-        raise NotImplementedError()
-        pass
+
+        if isinstance(other, Note):
+
+            try:
+                note_index = self.scale.all_notes.index(other)
+
+                # return corresponding note from scale
+                return self.scale.all_notes[note_index+self.staff_positions].copy()
+
+            except ValueError:
+                raise ValueError(f"Note {other} is not in scale {self.scale}")
+
+        elif isinstance(other, IntervalInScale):
+            if other.scale == self.scale:
+                return IntervalInScale(staff_positions=self.staff_positions+other.staff_positions)
+
+            raise ValueError("Cannot add two IntervalInScale objects with different scales")
+
+        else:
+            raise ValueError("Can add IntervalInScale only to Note and other IntervalInScale")
+
 
     def __sub__(self, other):
-        # FIXME: should it be in Note?.. should we use some method in this class when calling it
-        #  from note so logic will live here? should we just call __add__ with negative value from this class?
-        raise NotImplementedError()
-        pass
+
+        if isinstance(other, IntervalInScale):
+            if other.scale == self.scale:
+                return IntervalInScale(staff_positions=self.staff_positions + other.staff_positions)
+
+            raise ValueError("Cannot add two IntervalInScale objects with different scales")
+
+        else:
+            raise ValueError("Can only subtract other IntervalInScale from IntervalInScale")
+
+
+    def subtract_from_note(self, note: Note):
+
+        interval_in_scale: IntervalInScale = copy(self)
+        # invert for subtraction
+        interval_in_scale.staff_positions -= interval_in_scale.staff_positions
+
+        return interval_in_scale.__add__(note)
+
+    def add_to_note(self, note):
+
+        return self.__add__(note)
+
+
+    # todo: add __sub__ method to note that calls this one with negative value
 
     # there is no __eq__ overload as it does not seem to make a lot of sense to compare this entities
 
@@ -244,35 +330,78 @@ class Interval:
     # see https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
     # also https://en.wikipedia.org/wiki/Interval_(music)#Compound_intervals
 
-    def __init__(self, staff_positions: int, quality: IntervalQuality):
+    def __init__(self, staff_positions: int, quality: Optional[IntervalQuality] = None,
+                                             semitones: Optional[int] = None):
         """
         @staff_positions - difference in staff positions  between notes. Zero-based.
+        @quality - interval quality, depends on relation between staff positions and
+                   semitone difference between two notes
         E.g. to get a Fifth, set this to 4
         see. https://en.wikipedia.org/wiki/Staff_(music)#Staff_positions
         """
         self.staff_positions: int = staff_positions
 
+        if not quality and not semitones:
+            raise ValueError("Provide either semitones or quality value")
 
-        # todo: accept semitones instead of quality to determine it automatically and vica-versa
+        if quality and semitones:
+            # if for some reason we were provided with both, check them instead of failing:
+            assessed_quality = Interval.assess_quality(staff_positions, semitones)
+            if assessed_quality != quality:
+                raise ValueError(f"You passed both quality and semitones when defining Interval,"
+                                 f"but quality {quality} does not correspond to {staff_positions} staff positions "
+                                 f"with {semitones} semitones difference. Please provide either quality, or"
+                                 f"semitones difference.")
 
-        # can only be identified when we have at least one note to count interval from
-        # because quality depends on relation between staff positions and semitone difference between two notes
-        self.quality: IntervalQuality = quality
+        if quality:
+            self.quality: IntervalQuality = quality
+            self.semitones: int = semitones or Interval.calculate_semitones_difference(staff_positions, quality)
+
+        elif semitones:
+            self.semitones: int = semitones
+            self.quality: IntervalQuality = quality or Interval.assess_quality(staff_positions, semitones)
+
+
+    def get_tone_delta(self):
+        """
+        Returns a ToneDelta with the same number of semitones.
+        Useful for adding or subtracting operations with Notes.
+        """
+        return ToneDelta(semitones=self.semitones)
 
 
     def __add__(self, other):
-        raise NotImplementedError()
-        pass
+        if isinstance(other, Note):
+            return self.add_to_note(other)
 
-    def __sub__(self, other):
-        # FIXME: should it be in Note?.. should we use some method in this class when calling it
-        #  from note so logic will live here? should we just call __add__ with negative value from this class?
-        raise NotImplementedError()
-        pass
+        # TODO: I am not sure that adding intervals together makes sense. Or does it?
+        #  Do we add both semitones and staff positions?
+        raise ValueError("You can only add Intervals to notes.")
+
+    def add_to_note(self, note: Note) -> Note:
+        """
+        Adds this interval to a Note to get a new note
+        """
+        return note + self.get_tone_delta()
+
+    def subtract_from_note(self, note: Note) -> Note:
+        """
+        Subtracts this interval to a Note to get a new note
+        """
+        return note - self.get_tone_delta()
+
+    # def __sub__(self, other):
+    #     # FIXME: should it be in Note?.. should we use some method in this class when calling it
+    #     #  from note so logic will live here? should we just call __add__ with negative value from this class?
+    #     raise NotImplementedError()
+    #     pass
 
     def __eq__(self, other):
-        # todo: implement
-        raise NotImplementedError()
+
+        if (other.staff_positions == self.staff_positions) and (other.quality == self.quality):
+            return True
+
+        return False
 
 
     def get_quantitative_name(self) -> str:
@@ -290,8 +419,23 @@ class Interval:
         # TODO: make long notation option?
         return f"{self.quality.notation() if self.quality else '?'}{self.get_quantitative_name()}"
 
-    @classmethod
-    def assess_quality(cls, staff_position_difference, semitone_difference) -> IntervalQuality:
+
+    @staticmethod
+    def calculate_semitones_difference(staff_position_difference: int, quality: IntervalQuality) -> int:
+
+        if staff_position_difference>7:
+            staff_position_difference %= 7
+
+        try:
+            semitones = INTERVAL_QUALITY_TO_SEMITONE_MAP[quality][staff_position_difference]
+        except KeyError:
+            raise ValueError(f"Cannot find semitones difference corresponding "
+                             f"to {quality.short_name()}{staff_position_difference+1} interval")
+
+        return semitones
+
+    @staticmethod
+    def assess_quality(staff_position_difference: int, semitone_difference: int) -> IntervalQuality:
         """
         @staff_positions - staff positions between notes in scale
         @semitones - semitones between these notes
@@ -341,10 +485,22 @@ class Interval:
 
         return result
 
+    def is_consonant(self):
+        return self in CONSONANT_INTERVALS
+
+    def is_perfect_consonant(self):
+        return self in PERFECT_CONSONANT_INTERVALS
+
+    def is_imperfect_consonant(self):
+        return self in IMPERFECT_CONSONANT_INTERVALS
+
+    def is_dissonant(self):
+        return self in DISSONANT_INTERVALS
+
 
 # https://music.utk.edu/theorycomp/courses/murphy/documents/Intervals.pdf
 PERFECT_CONSONANT_INTERVALS = (
-    Interval(0, IntervalQuality.PERFECT),   # P1
+    Interval(0, IntervalQuality.PERFECT),   # P1    # TODO: add constants for all these intervals for easier reference?
     Interval(7, IntervalQuality.PERFECT),   # P8
     Interval(4, IntervalQuality.PERFECT),   # P5
     # P4 is weird so it's not added here:
