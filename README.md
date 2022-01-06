@@ -83,6 +83,7 @@ True
 - intervals 
   - addition and subtraction in scale
   - finding qualities of interval in scale (notation - https://en.wikipedia.org/wiki/Interval_(music)#Shorthand_notation, quality - https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals)
+  - check interval between two notes in scale
 - add and subtract intervals within a context of a scale
 - chords with scales, chord names and notes they consist of (don't forget octaves and root notes) - https://en.wikipedia.org/wiki/List_of_chords
 - chords in given scales (similar to notes_in_scale method)

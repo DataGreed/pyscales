@@ -1,4 +1,5 @@
 from copy import copy
+from enum import Enum
 
 from .primitives import Note, NoteArray
 
@@ -88,3 +89,48 @@ class Scale:
     def __str__(self):
         # TODO: change flats and sharps so note names will be unique across scale
         return str(self.notes_in_scale())
+
+
+class IntervalQuality(Enum):
+     PERFECT = 0
+     MINOR = 1
+     MAJOR = 2
+     DIMINISHED = 3
+     AUGMENTED = 4
+
+# todo: also add scientific notations
+INTERVAL_QUALITY_NAMES = {
+    IntervalQuality.PERFECT: "Perfect",
+    IntervalQuality.MINOR: "Minor",
+    IntervalQuality.MAJOR: "Major",
+    IntervalQuality.DIMINISHED: "Diminished",
+    IntervalQuality.AUGMENTED: "Augmented",
+}
+
+# TODO: interval names. They depend on staff poisition and quality
+
+
+class Interval:
+
+    # see https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
+
+    def __init__(self, staff_positions:int, scale: Scale):
+        """
+        Staff positions - number of positions in scale between notes.
+        see. https://en.wikipedia.org/wiki/Staff_(music)#Staff_positions
+        """
+        self.staff_positions: int = staff_positions
+        self.scale: Scale = scale
+
+    def __add__(self, other):
+        pass
+
+    def __sub__(self, other):
+        pass
+
+    def __str__(self):
+        return f"Unidentified quality {self.staff_positions}th"
+
+    @property
+    def quality(self) -> IntervalQuality:
+        pass
