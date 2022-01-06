@@ -78,7 +78,7 @@ True
 ## TODOs
 
 - ~~modes~~
-- midi note numbers
+- midi note numbers (see https://musicinformationretrieval.com/midi_conversion_table.html and https://www.inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies)
 - init note from midi number
 - intervals 
   - addition and subtraction in scale

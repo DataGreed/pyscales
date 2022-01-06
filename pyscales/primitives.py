@@ -1,4 +1,6 @@
+import math
 from copy import copy
+from typing import Optional
 
 from pyscales import constants
 
@@ -60,7 +62,22 @@ class Note:
     # bemol
     NOTE_NAME_FLAT_TO_SHARP_SYNONYMS = {y:x for x,y in NOTE_NAME_SHARP_TO_FLAT_SYNONYMS.items()}
 
-    def __init__(self, note_name: str, octave_number:int = 0):  # FIXME:should we use 4 octave as default? will NoteArray still work properly?
+    def __init__(self, note_name: Optional[str]=None, octave_number:int = 0, midi_value:Optional[int] = None):  # FIXME:should we use 4 octave as default? will NoteArray still work properly?
+
+        if note_name and midi_value:
+            raise ValueError("Specify either a note name or midi value, not both.")
+
+        if (midi_value is None) and (not note_name):
+            raise ValueError("Specify either a note name or midi value")
+
+        if midi_value:
+            if (midi_value < constants.MIDI_LOWEST_NOTE_VALUE) or (midi_value > constants.MIDI_HIGHEST_NOTE_VALUE):
+                raise ValueError(f"MIDI note value {midi_value} is not "
+                                 f"in {constants.MIDI_LOWEST_NOTE_VALUE}...{constants.MIDI_HIGHEST_NOTE_VALUE} range")
+
+            note_name = self.get_note_name_from_midi_value(midi_value)
+            octave_number = self.get_octave_from_midi_value(midi_value)
+
 
         note_name = note_name[0].upper() + note_name[1:]
 
@@ -70,6 +87,7 @@ class Note:
         self.note_name = self.any_to_sharp_name(note_name)
 
         # if octave_number < constants.LOWEST_OCTAVE_NUMBER or octave_number>constants.HIGHEST_OCTAVE_NUMBER:
+        # TODO: should we really validate this here? It only makes sense foro midi octave numbering
         ## fixme: this breaks NoteAray warping calculations now. Fix it and still have a value check
         #     raise ValueError(f"Octave number {octave_number} is not "
         #                      f"within {constants.LOWEST_OCTAVE_NUMBER}...{constants.HIGHEST_OCTAVE_NUMBER} range")
@@ -160,6 +178,31 @@ class Note:
 
         return frequency
 
+    @property
+    def midi_value(self):
+        """
+        Returns midi note value (number) for this note.
+        """
+
+        # I derived this formula looking at midi note numbers here:
+        # https://musicinformationretrieval.com/midi_conversion_table.html
+        # not sure if that's correct so we have to test it just in case
+
+        midi_number = 12*(self.octave_number+1) + constants.DEFAULT_NOTE_NAME_ORDER_IN_MIDI_OCTAVE.index(self.note_name)
+
+        if midi_number > constants.MIDI_HIGHEST_NOTE_VALUE or midi_number<constants.MIDI_LOWEST_NOTE_VALUE:
+            raise ValueError(f"Note {self} is out of MIDI range (11-132)")
+
+        return midi_number
+
+    @staticmethod
+    def get_note_name_from_midi_value(midi_value):
+        # I derived this from looking on midi value table, have to check
+        return constants.DEFAULT_NOTE_NAME_ORDER_IN_MIDI_OCTAVE[midi_value % 12]
+
+    @staticmethod
+    def get_octave_from_midi_value(midi_value):
+        return math.floor(midi_value / 12) - 1
 
 
 class NoteArray:
@@ -227,6 +270,11 @@ class NoteArray:
         pass
 
         if self.simulate_octaves:
+
+            # FIXME: note that this part of code creates notes in some weird negative octaves
+            #  which should not be done at all as it breaks validation of octave umbers when creating notes
+            #  and has to be fixed.
+
             # TODO: fix: there should be much better way to find it knowing the octave
             # than just iterating
             return self[-300:300].index(note) - 300 # index can be negative

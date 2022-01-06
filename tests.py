@@ -67,5 +67,48 @@ class ScalesAndModesTestCase(unittest.TestCase):
             self.assertEqual(scale.notes_in_scale()[i].note_name, expected_note_names[i])
 
 
+class MidiNoteValuesTest(unittest.TestCase):
+
+    def test_midi_values_from_notes(self):
+
+        # base on https://musicinformationretrieval.com/midi_conversion_table.html
+        # although this document mentions non-existent B#9 - typo?
+
+        test_data = [
+            ["C", 4, 60],
+            ["D#", 5, 75],
+            ["G#", 5, 80],
+            ["E", 0, 16],
+            ["A#", 2, 46],
+            ["B", 3, 59],
+            ["A", 4, 69],
+            ["G", 5, 79],
+            ["B", 9, 131],
+        ]
+
+        for line in test_data:
+            self.assertEqual(Note(line[0],line[1]).midi_value, line[2])
+
+    def test_initializing_notes_from_midi_values(self):
+
+        test_data = [
+            ["C", 4, 60],
+            ["D#", 5, 75],
+            ["G#", 5, 80],
+            ["E", 0, 16],
+            ["A#", 2, 46],
+            ["B", 3, 59],
+            ["A", 4, 69],
+            ["G", 5, 79],
+            ["B", 9, 131],
+        ]
+
+        for line in test_data:
+            note = Note(midi_value=line[2])
+
+            self.assertEqual(note.note_name, line[0])
+            self.assertEqual(note.octave_number, line[1])
+
+
 if __name__ == '__main__':
     unittest.main()
