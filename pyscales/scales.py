@@ -387,8 +387,9 @@ class Interval:
 
     def subtract_from_note(self, note: Note) -> Note:
         """
-        Subtracts this interval to a Note to get a new note
+        Subtracts this interval from a Note to get a new note
         """
+        #FIXME: does it actually makes sense to subtract intervals?
         return note - self.get_tone_delta()
 
     # def __sub__(self, other):
@@ -464,7 +465,7 @@ class Interval:
 
         try:
 
-            quality = INTERVAL_QUALITY_MAP[staff_position_difference][semitone_difference]
+            quality = INTERVAL_QUALITY_MAP[semitone_difference][staff_position_difference]
 
         except KeyError:
             raise ValueError(f"Cannot find interval quality corresponding to {semitone_difference} semitone "
@@ -502,31 +503,32 @@ class Interval:
 
 
 # main (non-compound, less than octave) intervals constants
-Interval.P1 = Interval(0, IntervalQuality.PERFECT)
-Interval.P8 = Interval(7, IntervalQuality.PERFECT)
-Interval.P4 = Interval(3, IntervalQuality.PERFECT)
-Interval.P5 = Interval(4, IntervalQuality.PERFECT)
+class Intervals:
+    P1 = Interval(0, IntervalQuality.PERFECT)
+    P8 = Interval(7, IntervalQuality.PERFECT)
+    P4 = Interval(3, IntervalQuality.PERFECT)
+    P5 = Interval(4, IntervalQuality.PERFECT)
 
-Interval.m2 = Interval(1, IntervalQuality.MINOR)
-Interval.m3 = Interval(2, IntervalQuality.MINOR)
-Interval.m6 = Interval(5, IntervalQuality.MINOR)
-Interval.m7 = Interval(6, IntervalQuality.MINOR)
+    m2 = Interval(1, IntervalQuality.MINOR)
+    m3 = Interval(2, IntervalQuality.MINOR)
+    m6 = Interval(5, IntervalQuality.MINOR)
+    m7 = Interval(6, IntervalQuality.MINOR)
 
-Interval.M2 = Interval(1, IntervalQuality.MAJOR)
-Interval.M3 = Interval(2, IntervalQuality.MAJOR)
-Interval.M6 = Interval(5, IntervalQuality.MAJOR)
-Interval.M7 = Interval(6, IntervalQuality.MAJOR)
+    M2 = Interval(1, IntervalQuality.MAJOR)
+    M3 = Interval(2, IntervalQuality.MAJOR)
+    M6 = Interval(5, IntervalQuality.MAJOR)
+    M7 = Interval(6, IntervalQuality.MAJOR)
 
-Interval.d5 = Interval(4, IntervalQuality.DIMINISHED)
+    d5 = Interval(4, IntervalQuality.DIMINISHED)
 
-Interval.A4 = Interval(3, IntervalQuality.AUGMENTED)
+    A4 = Interval(3, IntervalQuality.AUGMENTED)
 
 
 # https://music.utk.edu/theorycomp/courses/murphy/documents/Intervals.pdf
 PERFECT_CONSONANT_INTERVALS = (
-    Interval.P1,   # P1    # TODO: add constants for all these intervals for easier reference?
-    Interval.P8,
-    Interval.P5,   # P5
+    Intervals.P1,   # P1    # TODO: add constants for all these intervals for easier reference?
+    Intervals.P8,
+    Intervals.P5,   # P5
     # P4 is weird so it's not added here:
         # The P4 is sometimes consonant and sometimes dissonant.
         # In early music, P4 was a consonance and with other perfect intervals made up
@@ -539,20 +541,20 @@ PERFECT_CONSONANT_INTERVALS = (
 )
 
 IMPERFECT_CONSONANT_INTERVALS = (
-    Interval.m3,   # m3
-    Interval.M3,   # M3
-    Interval.m6,   # m6
-    Interval.M6,   # M6
+    Intervals.m3,   # m3
+    Intervals.M3,   # M3
+    Intervals.m6,   # m6
+    Intervals.M6,   # M6
 )
 
 CONSONANT_INTERVALS = PERFECT_CONSONANT_INTERVALS + IMPERFECT_CONSONANT_INTERVALS
 
 DISSONANT_INTERVALS = (
-    Interval.m2,  # m2
-    Interval.M2,  # M2
-    Interval.m7,  # m7
-    Interval.M7,  # M7
+    Intervals.m2,  # m2
+    Intervals.M2,  # M2
+    Intervals.m7,  # m7
+    Intervals.M7,  # M7
     # tritones
-    Interval.d5, # d5 - diminished 5th, tritone
-    Interval.A4, # A4 - augmented 4th, tritone
+    Intervals.d5, # d5 - diminished 5th, tritone
+    Intervals.A4, # A4 - augmented 4th, tritone
 )
