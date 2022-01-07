@@ -304,24 +304,41 @@ class IntervalsTestCase(unittest.TestCase):
 
     def test_compound_interval_between_two_notes_in_scale(self):
 
-        raise NotImplementedError()
-        # c_major = Scale(Note("C", 4), scaleformulas.MAJOR_FORMULA)
-        #
-        # interval = Interval.between_notes(Note("D", 4), Note("C", 4), c_major)
-        #
+        # check https://en.wikipedia.org/wiki/Interval_(music)#Main_compound_intervals
+
+        # raise NotImplementedError()
+
+
+        c_major = Scale(Note("C", 4), scaleformulas.MAJOR_FORMULA)
+
+        interval = Interval.between_notes(Note("C", 4), Note("D", 4), c_major)
+
+        self.assertEqual(Intervals.M2, interval)
+        self.assertTrue(interval.is_dissonant())
+        self.assertEqual(IntervalQuality.MAJOR, interval.quality)
+        self.assertEqual(2, interval.semitones)
+        self.assertEqual(1, interval.staff_positions)
+
+        interval = Interval.between_notes(Note("C", 4), Note("D", 4) + ToneDelta(12), c_major)
+
         # self.assertEqual(Intervals.M2, interval)
         # self.assertTrue(interval.is_dissonant())
-        # self.assertEqual(IntervalQuality.MAJOR, interval.quality)
-        # self.assertEqual(2, interval.semitones)
-        # self.assertEqual(1, interval.staff_positions)
-        #
-        # interval = Interval.between_notes(Note("C", 4), Note("D", 4) + ToneDelta(12), c_major)
-        #
-        # # self.assertEqual(Intervals.M2, interval)
-        # # self.assertTrue(interval.is_dissonant())
-        # self.assertEqual(IntervalQuality.MAJOR, interval.quality)
-        # self.assertEqual(2+12, interval.semitones)
-        # self.assertEqual(1+7, interval.staff_positions)
+        self.assertEqual(IntervalQuality.MAJOR, interval.quality)
+        self.assertEqual(2+12, interval.semitones)
+        self.assertEqual(1+7, interval.staff_positions)
+
+
+        interval = Interval.between_notes(Note("A", 4), Note("G", 5) + ToneDelta(12), c_major)
+
+        # self.assertEqual(Intervals.m7, interval)
+        # self.assertTrue(interval.is_dissonant())
+        self.assertEqual(IntervalQuality.MINOR, interval.quality)
+        self.assertEqual(10+12, interval.semitones)
+        self.assertEqual(6+7, interval.staff_positions)
+
+        # todo: add more compound cases here!!
+        # todo: add main compound cases from wiki here
+        # https://en.wikipedia.org/wiki/Interval_(music)#Main_compound_intervals
 
 
 

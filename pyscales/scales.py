@@ -1,3 +1,4 @@
+import math
 from copy import copy
 from enum import Enum
 from typing import Optional
@@ -428,11 +429,19 @@ class Interval:
     @staticmethod
     def calculate_semitones_difference(staff_position_difference: int, quality: IntervalQuality) -> int:
 
-        if staff_position_difference>7:
-            staff_position_difference %= 7
+
+        shift_octaves = 0
+
+        # if more than an octave, remove octaves as INTERVAL_QUALITY_TO_SEMITONE_MAP goes only within 1 octave
+        # but save number of octaves for correct semitone calculation
+        if staff_position_difference > 7:
+
+            shift_octaves = math.floor(staff_position_difference / 7)
+
+            staff_position_difference %= 7  # FIXME: should not we add 1?
 
         try:
-            semitones = INTERVAL_QUALITY_TO_SEMITONE_MAP[quality][staff_position_difference]
+            semitones = INTERVAL_QUALITY_TO_SEMITONE_MAP[quality][staff_position_difference] + 12*shift_octaves
         except KeyError:
             raise ValueError(f"Cannot find semitones difference corresponding "
                              f"to {quality.short_name()}{staff_position_difference+1} interval")
@@ -463,8 +472,8 @@ class Interval:
         # TODO: there should probably be an algorithmic way to do this without using a map that is easily computable
 
         if semitone_difference > 12:
-            semitone_difference %= 12
-            staff_position_difference %= 7
+            semitone_difference %= 12       # FIXME: should not we add 1 here too? or not?
+            staff_position_difference %= 7  # FIXME: should not we add 1 here since we have both 0 and 1 in map?
 
         try:
 
