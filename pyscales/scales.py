@@ -370,6 +370,9 @@ class Interval:
         """
         return ToneDelta(semitones=self.semitones)
 
+    def __repr__(self):
+
+        return f"{super(Interval, self).__repr__()[:-1]} ({self.__str__()})>"
 
     def __add__(self, other):
         if isinstance(other, Note):
@@ -479,8 +482,8 @@ class Interval:
         Returns an interval between two notes.
         The returned interval has quality info.
         """
-        semitone_interval = (note1 - note2).semitones
-        staff_interval = scale.notes_in_scale().index(note1) - scale.notes_in_scale().index(note2)
+        semitone_interval = abs((note1 - note2).semitones)
+        staff_interval = abs(scale.notes_in_scale().index(note1) - scale.notes_in_scale().index(note2))
 
         quality = cls.assess_quality(staff_interval, semitone_interval)
         result = Interval(staff_interval, quality)

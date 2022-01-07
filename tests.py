@@ -1,8 +1,8 @@
 import unittest
 
 from pyscales import constants, scaleformulas
-from pyscales.primitives import Note, NoteArray
-from pyscales.scales import Scale, IntervalInScale
+from pyscales.primitives import Note, NoteArray, ToneDelta
+from pyscales.scales import Scale, IntervalInScale, Interval, IntervalQuality, Intervals
 
 
 class TestNoteFrequencies(unittest.TestCase):
@@ -240,7 +240,99 @@ class IntervalInScaleTestCase(unittest.TestCase):
 
 
 class IntervalsTestCase(unittest.TestCase):
-    pass
+
+    def test_interval_between_two_notes_in_scale(self):
+
+        c_major = Scale(Note("C", 4), scaleformulas.MAJOR_FORMULA)
+
+        interval = Interval.between_notes(Note("D", 4), Note("C", 4), c_major)
+
+        self.assertEqual(Intervals.M2, interval)
+        self.assertTrue(interval.is_dissonant())
+        self.assertEqual(IntervalQuality.MAJOR, interval.quality)
+        self.assertEqual(2, interval.semitones)
+        self.assertEqual(1, interval.staff_positions)
+
+
+        interval = Interval.between_notes(Note("C", 4), Note("F", 4), c_major)
+
+        self.assertEqual(Intervals.P4, interval)
+        # self.assertTrue(interval.is_perfect_consonant())
+        # self.assertTrue(interval.is_consonant())
+        self.assertEqual(IntervalQuality.PERFECT, interval.quality)
+        self.assertEqual(5, interval.semitones)
+        self.assertEqual(3, interval.staff_positions)
+
+        # switch notes positions - should have same results
+        interval = Interval.between_notes(Note("F", 4), Note("C", 4), c_major)
+
+        self.assertEqual(Intervals.P4, interval)
+        # self.assertTrue(interval.is_perfect_consonant()) # this interval is weird, not sure if its coonsonant
+        # self.assertTrue(interval.is_consonant())
+        self.assertEqual(IntervalQuality.PERFECT, interval.quality)
+        self.assertEqual(5, interval.semitones)
+        self.assertEqual(3, interval.staff_positions)
+
+        a_minor = Scale(Note("A", 4), scaleformulas.MINOR_FORMULA)
+        interval = Interval.between_notes(Note("A", 4), Note("G", 5), a_minor)
+
+        self.assertEqual(Intervals.m7, interval)
+        self.assertTrue(interval.is_dissonant())
+        self.assertEqual(IntervalQuality.MINOR, interval.quality)
+        self.assertEqual(10, interval.semitones)
+        self.assertEqual(6, interval.staff_positions)
+
+        # check again in major just to be sure it's the same
+        interval = Interval.between_notes(Note("A", 4), Note("G", 5), c_major)
+
+        self.assertEqual(Intervals.m7, interval)
+        self.assertTrue(interval.is_dissonant())
+        self.assertEqual(IntervalQuality.MINOR, interval.quality)
+        self.assertEqual(10, interval.semitones)
+        self.assertEqual(6, interval.staff_positions)
+
+        interval = Interval.between_notes(Note("F", 4), Note("B", 4), c_major)
+
+        self.assertEqual(Intervals.A4, interval)
+        self.assertTrue(interval.is_dissonant())
+        self.assertEqual(IntervalQuality.AUGMENTED, interval.quality)
+        self.assertEqual(6, interval.semitones)
+        self.assertEqual(3, interval.staff_positions)
+
+
+
+
+    def test_compound_interval_between_two_notes_in_scale(self):
+
+        raise NotImplementedError()
+        # c_major = Scale(Note("C", 4), scaleformulas.MAJOR_FORMULA)
+        #
+        # interval = Interval.between_notes(Note("D", 4), Note("C", 4), c_major)
+        #
+        # self.assertEqual(Intervals.M2, interval)
+        # self.assertTrue(interval.is_dissonant())
+        # self.assertEqual(IntervalQuality.MAJOR, interval.quality)
+        # self.assertEqual(2, interval.semitones)
+        # self.assertEqual(1, interval.staff_positions)
+        #
+        # interval = Interval.between_notes(Note("C", 4), Note("D", 4) + ToneDelta(12), c_major)
+        #
+        # # self.assertEqual(Intervals.M2, interval)
+        # # self.assertTrue(interval.is_dissonant())
+        # self.assertEqual(IntervalQuality.MAJOR, interval.quality)
+        # self.assertEqual(2+12, interval.semitones)
+        # self.assertEqual(1+7, interval.staff_positions)
+
+
+
+    def test_interval_addition_to_note(self):
+        raise NotImplementedError()
+
+    def test_compound_interval_addition_to_note(self):
+        raise NotImplementedError()
+
+        # compound intervals
+
 
 if __name__ == '__main__':
     unittest.main()
