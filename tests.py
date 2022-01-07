@@ -127,6 +127,117 @@ class IntervalInScaleTestCase(unittest.TestCase):
 
         self.assertEqual(c.staff_positions, 28)
 
+    def test_interval_in_scale_subtraction_from_each_other(self):
+
+        a = IntervalInScale(staff_positions=4, scale=Scale(Note("C", 4), scaleformulas.MAJOR_FORMULA))
+        b = IntervalInScale(staff_positions=1, scale=Scale(Note("C", 4), scaleformulas.MAJOR_FORMULA))
+
+        c = a - b
+
+        self.assertEqual(c.staff_positions, 3)
+
+        a = IntervalInScale(staff_positions=2, scale=Scale(Note("C", 4), scaleformulas.MINOR_FORMULA))
+        b = IntervalInScale(staff_positions=3, scale=Scale(Note("C", 4), scaleformulas.MINOR_FORMULA))
+
+        c = a-b
+
+        self.assertEqual(c.staff_positions, -1)
+
+        a = IntervalInScale(staff_positions=23, scale=Scale(Note("C", 4), scaleformulas.MINOR_FORMULA))
+        b = IntervalInScale(staff_positions=5, scale=Scale(Note("C", 4), scaleformulas.MINOR_FORMULA))
+
+        c = a - b
+
+        self.assertEqual(c.staff_positions, 18)
+
+    def test_interval_in_scale_addition_to_note(self):
+
+        note = Note("C", 4)
+        scale = Scale(Note("C", 4), scaleformulas.MAJOR_FORMULA)
+
+        interval_in_scale = IntervalInScale(staff_positions=0, scale=scale)
+        result = note + interval_in_scale
+        self.assertEqual(result, Note("C", 4))
+
+        interval_in_scale = IntervalInScale(staff_positions=1, scale=scale)
+        result = note + interval_in_scale
+        self.assertEqual(result, Note("D", 4))
+
+        interval_in_scale = IntervalInScale(staff_positions=2, scale=scale)
+        result = note + interval_in_scale
+        self.assertEqual(result, Note("E", 4))
+
+        interval_in_scale = IntervalInScale(staff_positions=7, scale=scale)
+        result = note + interval_in_scale
+        self.assertEqual(result, Note("C", 5))
+
+        interval_in_scale = IntervalInScale(staff_positions=8, scale=scale)
+        result = note + interval_in_scale
+        self.assertEqual(result, Note("D", 5))
+
+        interval_in_scale = IntervalInScale(staff_positions=-1, scale=scale)
+        result = note + interval_in_scale
+        self.assertEqual(result, Note("B", 3))
+
+
+        note = Note("A", 4)
+        scale = Scale(Note("F#", 4), scaleformulas.MINOR_FORMULA)
+
+        interval_in_scale = IntervalInScale(staff_positions=2, scale=scale)
+        result = note + interval_in_scale
+        self.assertEqual(Note("C#", 5), result)  # octaves numbers are absolute, not dependant on scales. C marks new octave start
+
+        interval_in_scale = IntervalInScale(staff_positions=-1, scale=scale)
+        result = note + interval_in_scale
+        self.assertEqual(result, Note("G#", 4))
+
+        note = Note("C", 4)
+        scale = Scale(Note("A", 4), scaleformulas.MINOR_FORMULA)
+
+        interval_in_scale = IntervalInScale(staff_positions=3, scale=scale)
+        result = note + interval_in_scale
+        self.assertEqual(result, Note("F", 4))
+
+        interval_in_scale = IntervalInScale(staff_positions=1, scale=scale)
+        result = note + interval_in_scale
+        self.assertEqual(result, Note("D", 4))
+
+
+    def test_interval_in_scale_subtraction_from_note(self):
+
+        note = Note("C", 4)
+        scale = Scale(Note("C", 4), scaleformulas.MAJOR_FORMULA)
+
+        interval_in_scale = IntervalInScale(staff_positions=0, scale=scale)
+        result = note - interval_in_scale
+        self.assertEqual(result, Note("C", 4))
+
+        interval_in_scale = IntervalInScale(staff_positions=2, scale=scale)
+        result = note - interval_in_scale
+        self.assertEqual(Note("A", 3), result)
+
+        note = Note("F", 4)
+        scale = Scale(Note("Eb", 4), scaleformulas.MAJOR_FORMULA)
+
+        interval_in_scale = IntervalInScale(staff_positions=0, scale=scale)
+        result = note - interval_in_scale
+        self.assertEqual(result, Note("F", 4))
+
+        interval_in_scale = IntervalInScale(staff_positions=1, scale=scale)
+        result = note - interval_in_scale
+        self.assertEqual(result, Note("Eb", 4))
+        self.assertEqual(result, Note("D#", 4)) # same thing
+
+        interval_in_scale = IntervalInScale(staff_positions=2, scale=scale)
+        result = note - interval_in_scale
+        self.assertEqual(result, Note("D", 4))
+
+        interval_in_scale = IntervalInScale(staff_positions=4, scale=scale)
+        result = note - interval_in_scale
+        self.assertEqual(result, Note("Bb", 3))
+
+
+
 
 class IntervalsTestCase(unittest.TestCase):
     pass

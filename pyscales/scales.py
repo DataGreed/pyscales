@@ -95,9 +95,6 @@ class Scale:
         # TODO: change flats and sharps so note names will be unique across scale
         return str(self.notes_in_scale())
 
-    @property
-    def all_notes(self):
-        return self._all_notes
 
 
 class IntervalQuality(Enum):
@@ -277,10 +274,10 @@ class IntervalInScale:
         if isinstance(other, Note):
 
             try:
-                note_index = self.scale.all_notes.index(other)
+                note_index = self.scale.notes_in_scale().index(other)
 
                 # return corresponding note from scale
-                return self.scale.all_notes[note_index+self.staff_positions].copy()
+                return copy(self.scale.notes_in_scale()[note_index+self.staff_positions])
 
             except ValueError:
                 raise ValueError(f"Note {other} is not in scale {self.scale}")
@@ -299,7 +296,7 @@ class IntervalInScale:
 
         if isinstance(other, IntervalInScale):
             if other.scale == self.scale:
-                return IntervalInScale(staff_positions=self.staff_positions + other.staff_positions)
+                return IntervalInScale(staff_positions=self.staff_positions - other.staff_positions, scale=self.scale)
 
             raise ValueError("Cannot add two IntervalInScale objects with different scales")
 
@@ -311,7 +308,7 @@ class IntervalInScale:
 
         interval_in_scale: IntervalInScale = copy(self)
         # invert for subtraction
-        interval_in_scale.staff_positions -= interval_in_scale.staff_positions
+        interval_in_scale.staff_positions = -interval_in_scale.staff_positions
 
         return interval_in_scale.__add__(note)
 
@@ -482,7 +479,7 @@ class Interval:
         The returned interval has quality info.
         """
         semitone_interval = (note1 - note2).semitones
-        staff_interval = scale.all_notes.index(note1) - scale.all_notes.index(note2)
+        staff_interval = scale.notes_in_scale().index(note1) - scale.notes_in_scale().index(note2)
 
         quality = cls.assess_quality(staff_interval, semitone_interval)
         result = Interval(staff_interval, quality)
