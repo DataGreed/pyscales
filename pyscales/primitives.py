@@ -100,6 +100,14 @@ class Note:
 
     def __add__(self, other):
 
+        from pyscales import IntervalInScale
+        from pyscales import Interval
+        if isinstance(other, IntervalInScale):
+            return other.add_to_note(self)
+        elif isinstance(other, Interval):
+            return other.add_to_note(self)
+
+        # assume other is ToneDelta
         # TODO: cache this somewhere
         notes_order = NoteArray(NoteArray.DEFAULT_NOTE_ORDER)
 
@@ -118,6 +126,9 @@ class Note:
 
         this_note_index = notes_order.index(self)
 
+        from pyscales import IntervalInScale
+
+        from pyscales import Interval
         if hasattr(other, 'semitones'):
 
             return notes_order[this_note_index-other.semitones]
@@ -128,7 +139,14 @@ class Note:
 
             return ToneDelta(this_note_index-other_not_index)
 
-        raise ValueError("Can only subtract ToneDelta or other Note")
+        elif isinstance(other, IntervalInScale):
+
+            return other.subtract_from_note(self)
+
+        elif isinstance(other, Interval):
+            return other.subtract_from_note(self)
+
+        raise ValueError("Can only subtract ToneDelta, IntervalInScale or other Note")
 
 
     def __str__(self):
